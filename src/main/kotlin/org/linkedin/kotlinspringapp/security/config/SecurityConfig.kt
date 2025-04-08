@@ -1,5 +1,11 @@
-package org.linkedin.kotlinspringapp.security
+package org.linkedin.kotlinspringapp.security.config
 
+import com.nimbusds.jose.jwk.JWK
+import com.nimbusds.jose.jwk.JWKSet
+import com.nimbusds.jose.jwk.RSAKey
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet
+import com.nimbusds.jose.jwk.source.JWKSource
+import com.nimbusds.jose.proc.SecurityContext
 import jakarta.servlet.http.HttpServletResponse
 import org.linkedin.kotlinspringapp.repository.RefreshTokenRepository
 import org.linkedin.kotlinspringapp.security.jwt.JwtAccessTokenFilter
@@ -7,6 +13,7 @@ import org.linkedin.kotlinspringapp.security.jwt.JwtRefreshTokenFilter
 import org.linkedin.kotlinspringapp.security.jwt.JwtTokenUtils
 import org.linkedin.kotlinspringapp.security.rsa.RSAKeyRecord
 import org.linkedin.kotlinspringapp.security.userconfiguration.UserManagerConfig
+import org.linkedin.kotlinspringapp.service.LogoutHandlerService
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.core.annotation.Order
@@ -18,7 +25,9 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
+import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
 import org.springframework.security.oauth2.server.resource.web.BearerTokenAuthenticationEntryPoint
 import org.springframework.security.oauth2.server.resource.web.access.BearerTokenAccessDeniedHandler
 import org.springframework.security.web.SecurityFilterChain
@@ -32,11 +41,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-class Config(
+class SecurityConfig(
     private val userManagerConfig: UserManagerConfig,
     private val rsaKeyRecord: RSAKeyRecord,
     private val jwtTokenUtils: JwtTokenUtils,
-    private val refreshTokenRepository: RefreshTokenRepository
+    private val refreshTokenRepository: RefreshTokenRepository,
+    private val logoutHandlerService: LogoutHandlerService
 ) {
 
     @Order(1)
@@ -156,6 +166,13 @@ class Config(
 
     @Bean
     fun jwtDecoder() = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey).build()!!
+
+    @Bean
+    fun jwtEncoder(): JwtEncoder {
+        val jwk: JWK = RSAKey.Builder(rsaKeyRecord.rsaPublicKey).privateKey(rsaKeyRecord.rsaPrivateKey).build()
+        val jwkSource: JWKSource<SecurityContext> = ImmutableJWKSet(JWKSet(jwk))
+        return NimbusJwtEncoder(jwkSource)
+    }
 
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {

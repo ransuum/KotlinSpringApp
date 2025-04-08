@@ -1,11 +1,10 @@
 package org.linkedin.kotlinspringapp.models.entity
 
 import jakarta.persistence.*
-import org.springframework.data.relational.core.mapping.Table
 
-@Table(name = "users")
 @Entity
-data class User(
+@Table(name = "users")
+data class Users(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)

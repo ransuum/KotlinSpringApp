@@ -1,10 +1,8 @@
 package org.linkedin.kotlinspringapp.models.entity
 
 import jakarta.persistence.*
-import org.springframework.data.relational.core.mapping.Table
 import java.time.Instant
 
-@Table(name = "users")
 @Entity
 data class RefreshToken(
     @Id
@@ -18,5 +16,5 @@ data class RefreshToken(
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val users: User
+    val users: Users
 )

@@ -3,7 +3,6 @@ package org.linkedin.kotlinspringapp.security.jwt
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.linkedin.kotlinspringapp.repository.RefreshTokenRepository
 import org.linkedin.kotlinspringapp.security.rsa.RSAKeyRecord
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

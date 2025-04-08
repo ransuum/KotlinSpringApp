@@ -1,7 +1,8 @@
 package org.linkedin.kotlinspringapp.security.jwt
 
+import org.linkedin.kotlinspringapp.models.Roles
 import org.linkedin.kotlinspringapp.models.entity.RefreshToken
-import org.linkedin.kotlinspringapp.models.entity.User
+import org.linkedin.kotlinspringapp.models.entity.Users
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
 import org.springframework.security.core.GrantedAuthority
@@ -15,7 +16,7 @@ import java.time.temporal.ChronoUnit
 
 @Service
 class JwtTokenGenerator(private val jwtEncoder: JwtEncoder) {
-    val createRefreshToken: (User, Authentication) -> RefreshToken = { user, authentication ->
+    val createRefreshToken: (Users, Authentication) -> RefreshToken = { user, authentication ->
         RefreshToken(
             token = generateRefreshToken(authentication),
             expiresIn = Instant.now().plus(25, ChronoUnit.DAYS),
@@ -32,19 +33,17 @@ class JwtTokenGenerator(private val jwtEncoder: JwtEncoder) {
     }
 
     private val getPermissionsFromRoles: (String) -> String = { roles ->
-        roles.split(",")
-            .map { it.trim() }
-            .toList()
-            .joinToString(separator = " ")
+        val rolesList = roles.split(",").map { it.trim() }
+        Roles.getPermissionsForRoles(rolesList).joinToString(" ")
     }
 
-    fun createAuthenticationObject(user: User): Authentication {
-        val authorities: List<GrantedAuthority> = user.roles
+    fun createAuthenticationObject(users: Users): Authentication {
+        val authorities: List<GrantedAuthority> = users.roles
             .split(",")
             .map { role -> SimpleGrantedAuthority(role) }
             .toList()
 
-        return UsernamePasswordAuthenticationToken(user.email, user.password, authorities)
+        return UsernamePasswordAuthenticationToken(users.email, users.password, authorities)
     }
 
     fun generateRefreshToken(authentication: Authentication): String {
