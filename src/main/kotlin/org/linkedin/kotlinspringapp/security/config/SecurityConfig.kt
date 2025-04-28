@@ -25,6 +25,7 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.oauth2.jwt.JwtDecoder
 import org.springframework.security.oauth2.jwt.JwtEncoder
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder
@@ -165,7 +166,7 @@ class SecurityConfig(
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
 
     @Bean
-    fun jwtDecoder() = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey).build()!!
+    fun jwtDecoder(): JwtDecoder = NimbusJwtDecoder.withPublicKey(rsaKeyRecord.rsaPublicKey).build()
 
     @Bean
     fun jwtEncoder(): JwtEncoder {
@@ -178,6 +179,7 @@ class SecurityConfig(
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration().apply {
             addAllowedOrigin("http://localhost:8000")
+            allowedOriginPatterns = listOf("http://localhost:3000")
             allowedMethods = listOf(
                 "GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"
             )

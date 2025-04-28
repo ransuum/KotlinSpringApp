@@ -4,17 +4,19 @@ import jakarta.persistence.*
 import java.time.Instant
 
 @Entity
+@Table(name = "refresh_token")
 data class RefreshToken(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    val id: Long? = null,
+    var id: Long? = null,
 
-    val token: String,
-    val expiresIn: Instant,
-    val createdAt: Instant = Instant.now(),
+    @Column(nullable = false, updatable = false, length = 1000)
+    var token: String,
+    var expiresIn: Instant,
+    var createdAt: Instant = Instant.now(),
     var revoked: Boolean,
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val users: Users
+    var users: Users
 )

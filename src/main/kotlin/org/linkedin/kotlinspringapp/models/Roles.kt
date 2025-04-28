@@ -1,9 +1,8 @@
 package org.linkedin.kotlinspringapp.models
 
 enum class Roles(private val permissions: Set<String>) {
-    ROLE_TRAINEE(setOf("VIEW_TRAINEE_PROFILE", "SEARCH_TRAINEES", "AUTHORIZED")),
-    ROLE_TRAINER(setOf("VIEW_TRAINER_PROFILE", "SEARCH_TRAINERS", "CHANGE_STATUS", "AUTHORIZED")),
-    ADMIN(setOf("TRAINEE_DELETE", "TRAINER_DELETE", "FULL_ACCESS"));
+    ROLE_USER(setOf("ALL")),
+    ADMIN(setOf("DELETE", "FULL_ACCESS"));
 
     companion object {
         fun getPermissionsForRoles(roles: Collection<String>) = roles

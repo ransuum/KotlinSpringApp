@@ -40,7 +40,7 @@ class JwtRefreshTokenFilter(
 
             if (!username.isNullOrEmpty() && SecurityContextHolder.getContext().authentication == null) {
                 val isRefreshTokenValidInDatabase = refreshTokenRepository.findByToken(jwtRefreshToken.tokenValue)
-                    ?.let { !it.revoked }
+                    ?.let { !!it.revoked }
                     ?: false
 
                 val userDetails = jwtTokenUtils.userDetails(username)

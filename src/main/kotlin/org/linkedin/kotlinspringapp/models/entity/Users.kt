@@ -8,19 +8,20 @@ data class Users(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(nullable = false, updatable = false)
-    val id: String,
+    var id: String? = null,
 
-    val name: String,
+    var name: String?,
 
     @Column(name = "email", nullable = false, unique = true)
-    val email: String,
+    var email: String?,
 
     @Column(name = "username", nullable = false, unique = true)
-    val username: String,
+    var username: String?,
 
-    val password: String,
-    val roles: String,
+    @Column(name = "password", nullable = false)
+    var password: String?,
+    var roles: String,
 
     @OneToMany(cascade = [CascadeType.ALL], fetch = FetchType.LAZY, mappedBy = "users")
-    val refreshTokens: List<RefreshToken>
+    val refreshTokens: MutableList<RefreshToken> = mutableListOf()
 )
